@@ -5,11 +5,12 @@ namespace QuanLySanPham.Models
     public class Product
     {
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "Tên không được để trống")]
-        public string Name { get; set; }
-
-        [Range(1, 1000000, ErrorMessage = "Giá phải > 0")]
+        // Thêm dấu ? sau string
+        public string? Name { get; set; }
         public double Price { get; set; }
+
+        // BẠN VỪA THÊM 2 THUỘC TÍNH NÀY:
+        public int Quantity { get; set; }
+        public string? Description { get; set; }
     }
 }
