@@ -1,0 +1,13 @@
+﻿@model QuanLySanPham.Models.Product
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Chi tiết sản phẩm</h2>
+
+<p>ID: @Model.Id</p>
+<p>Tên: @Model.Name</p>
+<p>Giá: @Model.Price</p>
+
+<a asp-action="Index">Quay lại</a>

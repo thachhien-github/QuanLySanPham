@@ -1,0 +1,31 @@
+﻿@model QuanLySanPham.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Sửa sản phẩm</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label>Tên</label>
+        <input asp-for="Name" />
+    </div>
+
+    <div>
+        <label>Giá</label>
+        <input asp-for="Price" type="number" />
+    </div>
+
+    <button type="submit">Cập nhật</button>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

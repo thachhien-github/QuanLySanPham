@@ -1,0 +1,18 @@
+﻿@model QuanLySanPham.Models.Product
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Xóa sản phẩm</h2>
+
+<p>Bạn có chắc muốn xóa?</p>
+
+<p>@Model.Name - @Model.Price</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Xóa</button>
+</form>
+
+<a asp-action="Index">Hủy</a>
