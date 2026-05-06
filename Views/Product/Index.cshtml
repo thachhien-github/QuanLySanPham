@@ -21,8 +21,9 @@
                     <thead class="table-dark">
                         <tr>
                             <th class="text-center" style="width: 10%">ID</th>
-                            <th style="width: 40%">Tên Sản phẩm</th>
-                            <th class="text-end" style="width: 25%">Đơn giá</th>
+                            <th style="width: 30%">Tên Sản phẩm</th>
+                            <th style="width: 15%">Danh mục</th>
+                            <th class="text-end" style="width: 20%">Đơn giá</th>
                             <th class="text-center" style="width: 25%">Thao tác</th>
                         </tr>
                     </thead>
@@ -38,8 +39,10 @@
                                     <td class="fw-semibold text-dark">
                                         @item.Name
                                     </td>
+                                    <td class="text-capitalize">
+                                        <span class="badge bg-info-subtle text-info">@(item.Category?.Name ?? "Chưa có")</span>
+                                    </td>
                                     <td class="text-end text-danger fw-bold">
-                                        <!-- Chuyển đổi định dạng số thành: 100,000 VNĐ -->
                                         @string.Format("{0:N0} VNĐ", item.Price)
                                     </td>
                                     <td class="text-center">
@@ -55,7 +58,7 @@
                         {
                             <!-- Trạng thái trống khi chưa có dữ liệu -->
                             <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
+                                <td colspan="5" class="text-center py-5 text-muted">
                                     <span class="fs-4 d-block mb-2">📭</span>
                                     <em>Chưa có sản phẩm nào trong cơ sở dữ liệu.</em>
                                 </td>

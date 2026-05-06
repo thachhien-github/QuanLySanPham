@@ -6,8 +6,18 @@
 
 <h2>Chi tiết sản phẩm</h2>
 
-<p>ID: @Model.Id</p>
-<p>Tên: @Model.Name</p>
-<p>Giá: @Model.Price</p>
+<dl class="row">
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+    <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Price)</dt>
+    <dd class="col-sm-9">@string.Format("{0:N0} VNĐ", Model.Price)</dd>
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CategoryId)</dt>
+    <dd class="col-sm-9">@(Model.Category?.Name ?? "Chưa có")</dd>
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Quantity)</dt>
+    <dd class="col-sm-9">@Model.Quantity</dd>
+    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+</dl>
 
-<a asp-action="Index">Quay lại</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Sửa</a>
+<a asp-action="Index" class="btn btn-secondary">Quay lại</a>

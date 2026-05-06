@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuanLySanPham.Models;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuanLySanPham.Models
 {
@@ -17,21 +18,14 @@ namespace QuanLySanPham.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            // Dữ liệu mẫu cho Product
-            List<Product> products = new List<Product>()
-            {
-                new Product() { Id = 1, Name = "Sản phẩm 1", Price = 100 },
-                new Product() { Id = 2, Name = "Sản phẩm 2", Price = 200 },
-                new Product() { Id = 3, Name = "Sản phẩm 3", Price = 300 }
-            };
-            modelBuilder.Entity<Product>().HasData(products);
+            // Configure 1-n relationship
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Dữ liệu mẫu cho Category
-            modelBuilder.Entity<Category>().HasData(
-                new Category() { Id = 1, CategoryName = "Điện tử" },
-                new Category() { Id = 2, CategoryName = "Thời trang" },
-                new Category() { Id = 3, CategoryName = "Gia dụng" }
-            );
+            // Seed data removed to avoid duplicate key issues when migrations were partially applied.
 
         }
     }

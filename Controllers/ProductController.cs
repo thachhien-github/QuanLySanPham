@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuanLySanPham.Models;
 
 namespace QuanLySanPham.Controllers
@@ -15,13 +16,14 @@ namespace QuanLySanPham.Controllers
         // 📄 READ - Danh sách
         public IActionResult Index()
         {
-            var products = _context.Products.ToList();
+            var products = _context.Products.Include(p => p.Category).ToList();
             return View(products);
         }
 
         // ➕ CREATE - GET
         public IActionResult Create()
         {
+            ViewBag.Categories = _context.Categories.ToList();
             return View();
         }
 
@@ -29,7 +31,8 @@ namespace QuanLySanPham.Controllers
         [HttpPost]
         public IActionResult Create(Product p)
         {
-            if (ModelState.IsValid)
+            ViewBag.Categories = _context.Categories.ToList();
+            if (ModelState.IsValid && p.CategoryId > 0)
             {
                 _context.Products.Add(p);
                 _context.SaveChanges();
@@ -41,7 +44,7 @@ namespace QuanLySanPham.Controllers
         // 🔍 DETAILS
         public IActionResult Details(int id)
         {
-            var product = _context.Products.FirstOrDefault(x => x.Id == id);
+            var product = _context.Products.Include(p => p.Category).FirstOrDefault(x => x.Id == id);
             if (product == null) return NotFound();
 
             return View(product);
@@ -50,7 +53,8 @@ namespace QuanLySanPham.Controllers
         // ✏️ EDIT - GET
         public IActionResult Edit(int id)
         {
-            var product = _context.Products.Find(id);
+            var product = _context.Products.Include(p => p.Category).FirstOrDefault(x => x.Id == id);
+            ViewBag.Categories = _context.Categories.ToList();
             if (product == null) return NotFound();
 
             return View(product);
@@ -58,9 +62,14 @@ namespace QuanLySanPham.Controllers
 
         // ✏️ EDIT - POST
         [HttpPost]
-        public IActionResult Edit(Product p)
+        public IActionResult Edit(int id, Product p)
         {
-            if (ModelState.IsValid)
+            ViewBag.Categories = _context.Categories.ToList();
+            if (id != p.Id)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid && p.CategoryId > 0)
             {
                 _context.Products.Update(p);
                 _context.SaveChanges();
