@@ -1,0 +1,97 @@
+@model IEnumerable<QuanLySanPham.Models.Category>
+
+@{
+    ViewData["Title"] = "Danh sách Danh mục";
+    var search = ViewBag.Search as string;
+    int page = ViewBag.Page ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold">📂 Quản lý Danh mục</h2>
+        <a asp-action="Create" class="btn btn-success shadow-sm rounded-pill px-4 fw-bold">+ Thêm mới</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2 align-items-center">
+                <div class="col-md-8">
+                    <input class="form-control" name="search" value="@search" placeholder="Nhập tên danh mục cần tìm..." />
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                </div>
+            </form>
+
+            @if (TempData["DeleteError"] != null)
+            {
+                <div class="alert alert-danger mt-3 mb-0" role="alert">@TempData["DeleteError"]</div>
+            }
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" style="width: 15%">ID</th>
+                            <th style="width: 40%">Tên danh mục</th>
+                            <th class="text-center" style="width: 45%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-center fw-bold text-secondary">#@item.Id</td>
+                                    <td class="fw-semibold text-dark">@item.Name</td>
+                                    <td class="text-center">
+                                        <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary mx-1">Sửa</a>
+                                        <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-outline-info mx-1">Chi tiết</a>
+                                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-outline-danger mx-1">Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <span class="fs-4 d-block mb-2">📭</span>
+                                    <em>Không có danh mục phù hợp.</em>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { search, page = page - 1 })" tabindex="-1">Previous</a>
+                </li>
+
+                @for (int p = 1; p <= totalPages; p++)
+                {
+                    <li class="page-item @(p == page ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { search, page = p })">@p</a>
+                    </li>
+                }
+
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { search, page = page + 1 })">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+

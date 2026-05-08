@@ -1,0 +1,28 @@
+@model QuanLySanPham.Models.Category
+
+@{
+    ViewData["Title"] = "Sửa danh mục";
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary">✏️ Sửa danh mục</h2>
+
+    <form asp-action="Edit" method="post" class="mt-3">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Tên danh mục</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
