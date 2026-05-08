@@ -2,18 +2,105 @@
 
 @{
     ViewData["Title"] = "Danh sách Sản phẩm";
+    var search = ViewBag.Search as string;
+    int page = ViewBag.Page ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    var stats = ViewBag.Stats as List<QuanLySanPham.Models.CategoryProductStatsVm>;
 }
 
 <div class="container mt-4">
     <!-- Phần Header: Tiêu đề và nút Thêm mới -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="text-primary fw-bold">📦 Quản lý Sản phẩm</h2>
         <a asp-action="Create" class="btn btn-success shadow-sm rounded-pill px-4 fw-bold">
             + Thêm mới Sản phẩm
         </a>
     </div>
 
-    <!-- Phần Bảng dữ liệu -->
+    <!-- Search + Paging -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2 align-items-center">
+                <div class="col-md-8">
+                    <input class="form-control" name="search" value="@search" placeholder="Nhập tên sản phẩm cần tìm..." />
+                </div>
+                <div class="col-md-4 d-grid">
+                    <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+@section Scripts {
+    <script>
+        // Modal xác nhận xóa
+        let deleteProductId = null;
+
+        function confirmDelete(id) {
+            deleteProductId = id;
+
+            const modalEl = document.getElementById('deleteProductModal');
+            if (!modalEl) return;
+
+            // Bootstrap 5 modal
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+
+            const idText = document.getElementById('deleteProductIdText');
+            if (idText) idText.textContent = id;
+        }
+
+        function closeDeleteModal() {
+            deleteProductId = null;
+            const modalEl = document.getElementById('deleteProductModal');
+            if (!modalEl) return;
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+        }
+
+        function doDelete() {
+            if (deleteProductId == null) return;
+
+            // Tạo form POST để submit vào Product/Delete
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '@Url.Action("Delete", "Product")';
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'id';
+            input.value = deleteProductId;
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+}
+
+    <!-- Modal xác nhận xóa (Bootstrap 5) -->
+    <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="closeDeleteModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="fw-semibold mb-2">Bạn có chắc chắn muốn xóa sản phẩm này?</div>
+                    <div class="text-muted small">ID: <span id="deleteProductIdText">...</span></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="closeDeleteModal()">Hủy</button>
+                    <button type="button" class="btn btn-danger" onclick="doDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng dữ liệu -->
+
     <div class="card shadow-sm border-0 rounded-3">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -33,12 +120,8 @@
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="text-center fw-bold text-secondary">
-                                        #@item.Id
-                                    </td>
-                                    <td class="fw-semibold text-dark">
-                                        @item.Name
-                                    </td>
+                                    <td class="text-center fw-bold text-secondary">#@item.Id</td>
+                                    <td class="fw-semibold text-dark">@item.Name</td>
                                     <td class="text-capitalize">
                                         <span class="badge bg-info-subtle text-info">@(item.Category?.Name ?? "Chưa có")</span>
                                     </td>
@@ -46,22 +129,93 @@
                                         @string.Format("{0:N0} VNĐ", item.Price)
                                     </td>
                                     <td class="text-center">
-                                        <!-- Các nút Action -->
                                         <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary mx-1">Sửa</a>
                                         <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-outline-info mx-1">Chi tiết</a>
-                                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-outline-danger mx-1">Xóa</a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger mx-1"
+                                                onclick="confirmDelete(@item.Id)" >
+                                            Xóa
+                                        </button>
+
                                     </td>
                                 </tr>
                             }
                         }
                         else
                         {
-                            <!-- Trạng thái trống khi chưa có dữ liệu -->
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">
                                     <span class="fs-4 d-block mb-2">📭</span>
-                                    <em>Chưa có sản phẩm nào trong cơ sở dữ liệu.</em>
+                                    <em>Không có sản phẩm phù hợp.</em>
                                 </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination UI -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { search, page = page - 1 })" tabindex="-1">Previous</a>
+                </li>
+
+                @for (int p = 1; p <= totalPages; p++)
+                {
+                    <li class="page-item @(p == page ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { search, page = p })">@p</a>
+                    </li>
+                }
+
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { search, page = page + 1 })">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Thống kê theo danh mục -->
+    <div class="card shadow-sm border-0 rounded-3 mt-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">📊 Thống kê theo danh mục</h4>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th style="width: 25%">Tên danh mục</th>
+                            <th style="width: 10%" class="text-center">SL</th>
+                            <th style="width: 14%" class="text-end">Giá lớn nhất</th>
+                            <th style="width: 14%" class="text-end">Giá nhỏ nhất</th>
+                            <th style="width: 14%" class="text-end">Giá trung bình</th>
+                            <th style="width: 23%" class="text-end">Tổng giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (stats != null && stats.Any())
+                        {
+                            foreach (var s in stats)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@s.CategoryName</td>
+                                    <td class="text-center">@s.ProductCount</td>
+                                    <td class="text-end">@string.Format("{0:N0}", s.MaxPrice)</td>
+                                    <td class="text-end">@string.Format("{0:N0}", s.MinPrice)</td>
+                                    <td class="text-end">@string.Format("{0:N0}", s.AvgPrice)</td>
+                                    <td class="text-end">@string.Format("{0:N0}", s.TotalPrice)</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu thống kê.</td>
                             </tr>
                         }
                     </tbody>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLySanPham.Models;
 
+
 namespace QuanLySanPham.Controllers
 {
     public class ProductController : Controller
@@ -13,12 +14,63 @@ namespace QuanLySanPham.Controllers
             _context = context;
         }
 
-        // 📄 READ - Danh sách
-        public IActionResult Index()
+        // 📄 READ - Danh sách (LAB05: Search + Paging + Statistics)
+        public IActionResult Index(string search, int page = 1)
         {
-            var products = _context.Products.Include(p => p.Category).ToList();
+            const int pageSize = 5;
+
+            var query = _context.Products
+                .Include(p => p.Category)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var keyword = search.Trim();
+                query = query.Where(p => p.Name.Contains(keyword));
+            }
+
+            int totalCount = query.Count();
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            if (totalPages <= 0)
+            {
+                totalPages = 1;
+            }
+
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
+
+            var products = query
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Thống kê theo danh mục
+            var stats = _context.Products
+                .Include(p => p.Category)
+                .GroupBy(p => p.Category!.Name)
+                .Select(g => new CategoryProductStatsVm
+                {
+                    CategoryName = g.Key,
+                    ProductCount = g.Count(),
+                    MaxPrice = g.Max(x => x.Price),
+                    MinPrice = g.Min(x => x.Price),
+                    AvgPrice = g.Average(x => x.Price),
+                    TotalPrice = g.Sum(x => x.Price)
+                })
+                .OrderByDescending(x => x.TotalPrice)
+                .ToList();
+
+            ViewBag.Search = search;
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.Stats = stats;
+
             return View(products);
         }
+
 
         // ➕ CREATE - GET
         public IActionResult Create()
