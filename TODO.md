@@ -1,12 +1,7 @@
-# TODO
-
-## Alert xác nhận xóa
-- [x] Xem kỹ `Views/Product/Index.cshtml` phần JS alert và nút Xóa
-- [x] Sửa alert theo hướng dùng Bootstrap modal (mức 3 theo lựa chọn của user)
-- [x] Kết nối nút Xóa trong bảng tới modal, truyền `id` vào modal
-- [x] Khi bấm modal “Xóa”, submit POST tới `Product/Delete` kèm `id`
-- [x] Chạy build/kiểm tra lỗi biên dịch Razor (build OK, chỉ có warning CS0105 từ AppDbContext)
-
+- [x] Thêm field Quantity vào Views/Product/Create.cshtml
+- [x] Thêm field Quantity vào Views/Product/Edit.cshtml
+- [x] Thêm cột “Số lượng” hiển thị Quantity vào Views/Product/Index.cshtml
+- [x] Chạy/Build để đảm bảo không lỗi biên dịch
 
 
 

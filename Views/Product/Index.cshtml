@@ -111,6 +111,7 @@
                             <th style="width: 30%">Tên Sản phẩm</th>
                             <th style="width: 15%">Danh mục</th>
                             <th class="text-end" style="width: 20%">Đơn giá</th>
+                            <th class="text-center" style="width: 15%">Số lượng</th>
                             <th class="text-center" style="width: 25%">Thao tác</th>
                         </tr>
                     </thead>
@@ -127,6 +128,9 @@
                                     </td>
                                     <td class="text-end text-danger fw-bold">
                                         @string.Format("{0:N0} VNĐ", item.Price)
+                                    </td>
+                                    <td class="text-center fw-semibold">
+                                        @item.Quantity
                                     </td>
                                     <td class="text-center">
                                         <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-outline-primary mx-1">Sửa</a>
